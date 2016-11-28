@@ -1,0 +1,8 @@
+---
+# vars file for docker-fedora
+
+vg: docker
+pv: /dev/vdb
+docker_compose_version: 1.9.0
+kernel_name: Darwin
+machine_architecture: x86_64
