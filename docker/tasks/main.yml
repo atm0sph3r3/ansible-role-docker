@@ -1,31 +1,32 @@
 ---
 # tasks file for docker-fedora
+
 - name: install packages
-  yum:
-    state: latest
-    name: {{ item }}
-    with_items:
-      - docker
-      - lvm2
+  dnf: 
+    state: latest 
+    name: "{{ item }}"
+  with_items:
+    - docker
+    - lvm2
 
 - name: create physical volume
   lvg:
-    vg: {{ vg }}
+    vg: "{{ vg }}"
     state: present
-    pvs: {{ pv }}
+    pvs: "{{ pv }}"
 
 - name: create docker thinpool logical volume
   lvol:
     lv: thinpool
     size: 95%VG
     state: present
-    vg: {{ vg }}
+    vg: "{{ vg }}"
     opts: "--wipesignatures y"
 
 - name: create docker thinpool metadata logical volume
   lvol:
     lv: thinpoolmeta
-    vg: {{ vg }}
+    vg: "{{ vg }}"
     size: 1%VG
     opts: "--wipesignatures y"
 
@@ -41,7 +42,6 @@
   copy:
     src: docker-thinpool.profile
     dest: /etc/lvm/profile/docker-thinpool.profile
-    state: present
 
 - name: apply lvm profile
   command: lvchange --metadataprofile docker-thinpool docker/thinpool
@@ -50,7 +50,6 @@
   copy:
     src: daemon.json
     dest: /etc/docker/daemon.json
-    state: present
 
 - name: reload and start docker daemon
   systemd:
@@ -61,16 +60,18 @@
 
 - name: install docker compose
   get_url:
-    url: "https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-{{ kernel_name }}-{{ machine_archeiture }}" 
-    mode: +x
+    url: "https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-{{ os }}-{{ machine_architecture }}" 
+    mode: 0755
     dest: /usr/local/bin/docker-compose
+
+- name: create docker group
+  group:
+    name: docker
+    state: present
 
 - name: add user to docker group
   user:
     append: yes
-    groups:
-      - docker
+    groups: docker
     state: present
-    name: {{ item }}
-    with_items:
-      - user
+    name: {{ docker_user }}

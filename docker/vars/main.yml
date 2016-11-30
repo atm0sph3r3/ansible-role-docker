@@ -4,5 +4,6 @@
 vg: docker
 pv: /dev/vdb
 docker_compose_version: 1.9.0
-kernel_name: Darwin
+os: Darwin
 machine_architecture: x86_64
+docker_user: username
