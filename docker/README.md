@@ -1,38 +1,36 @@
 Role Name
 =========
-
-A brief description of the role goes here.
+This role is designed to configure a new environment to use Docker. It includes installing Docker, Docker Compose, and provisions device mapper storage. See [Docker](https://docs.docker.com/engine/userguide/storagedriver/device-mapper-driver/) for more information about device mapper-based storage. 
 
 Requirements
 ------------
-
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+NA
 
 Role Variables
 --------------
-
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+* docker_vg: the volume group that will be created for device mapper storage (default: docker)
+* docker_pv: the physical volume from which the volume group above will be created 
+docker_compose_version: the version of Docker Compose to retrieve (default: 1.9.0)
+* docker_os: the version of the operating system (default: Linux)
+* docker_machine_architecture: (default: x84_64)
+* docker_docker_users: an array of users to add to the docker group in order to allow Docker use without sudo
 
 Dependencies
 ------------
-
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+NA
 
 Example Playbook
 ----------------
-
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
-
-    - hosts: servers
+    - hosts: docker
+      become: yes
+      become_method: sudo
       roles:
-         - { role: username.rolename, x: 42 }
+        - docker
 
 License
 -------
-
-BSD
+MIT
 
 Author Information
 ------------------
-
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+GitHub: tb120
