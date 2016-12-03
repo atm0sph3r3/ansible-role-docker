@@ -4,14 +4,7 @@ galaxy_info:
   description: Setup Docker, Docker Compose, and device mapper storage
   license: MIT
   platforms:
-    - name: RHEL
-    - name: CentOS
     - name: Fedora
-    - name: Ubuntu
-      versions:
-        - precise
-        - trusty
-    - name: Debian
   galaxy_tags:
     - docker
     - dockercompose

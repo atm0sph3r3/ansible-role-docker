@@ -1,6 +1,6 @@
 Role Name
 =========
-This role is designed to configure a new environment to use Docker. It includes installing Docker, Docker Compose, and provisions device mapper storage. See [Docker](https://docs.docker.com/engine/userguide/storagedriver/device-mapper-driver/) for more information about device mapper-based storage. 
+This role is designed to configure a new environment to use Docker on Fedora. It includes installing Docker, Docker Compose, and provisions device mapper storage. See [Docker](https://docs.docker.com/engine/userguide/storagedriver/device-mapper-driver/) for more information about device mapper-based storage. 
 
 Requirements
 ------------
