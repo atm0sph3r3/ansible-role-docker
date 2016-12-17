@@ -1,5 +1,6 @@
 ---
 # vars file for docker-fedora
 
-docker_pv: 
-docker_docker_users:
+docker_vg: docker
+
+docker_machine_architecture: x86_64

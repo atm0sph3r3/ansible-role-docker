@@ -1,7 +1,4 @@
 ---
 # defaults file for docker
 
-docker_vg: docker
 docker_docker_compose_version: 1.9.0
-docker_os: Darwin
-docker_machine_architecture: x86_64

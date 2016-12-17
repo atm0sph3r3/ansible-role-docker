@@ -2,42 +2,53 @@
 # tasks file for docker-fedora
 
 - name: install packages
-  dnf: 
-    state: latest 
+  package:
+    state: latest
     name: "{{ item }}"
   with_items:
     - docker
     - lvm2
 
-- name: create physical volume
+- name: stop docker daemon
+  service:
+    name: docker
+    state: stopped
+
+- name: install docker compose
+  get_url:
+    url: "https://github.com/docker/compose/releases/download/{{ docker_docker_compose_version }}/docker-compose-Linux-{{ docker_machine_architecture }}"
+    mode: 0755
+    dest: /usr/local/bin/docker-compose
+
+- name: create volume group
   lvg:
-    vg: "{{ vg }}"
+    vg: "{{ docker_vg }}"
     state: present
-    pvs: "{{ pv }}"
+    pvs: "{{ docker_pvs }}"
 
 - name: create docker thinpool logical volume
   lvol:
     lv: thinpool
     size: 95%VG
     state: present
-    vg: "{{ vg }}"
+    vg: "{{ docker_vg }}"
     opts: "--wipesignatures y"
 
 - name: create docker thinpool metadata logical volume
   lvol:
     lv: thinpoolmeta
-    vg: "{{ vg }}"
+    vg: "{{ docker_vg }}"
     size: 1%VG
     opts: "--wipesignatures y"
 
 - name: convert pool into thin pool
   command: lvconvert -y --zero n -c 512K --thinpool docker/thinpool --poolmetadata docker/thinpoolmeta
- 
+
 - name: create lvm profile directory
   file:
     state: directory
     path: /etc/lvm/profile
- 
+
 - name: set thinpool profile
   copy:
     src: docker-thinpool.profile
@@ -52,17 +63,11 @@
     dest: /etc/docker/daemon.json
 
 - name: reload and start docker daemon
-  systemd:
+  service:
     daemon_reload: yes
     enabled: yes
     name: docker
     state: started
-
-- name: install docker compose
-  get_url:
-    url: "https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-{{ os }}-{{ machine_architecture }}" 
-    mode: 0755
-    dest: /usr/local/bin/docker-compose
 
 - name: create docker group
   group:
@@ -75,4 +80,4 @@
     groups: docker
     state: present
     name: "{{ item }}"
-  with_items: "{{ docker_users }}"
+  with_items: "{{ docker_docker_users | default([]) }}"

@@ -1,19 +1,17 @@
 Role Name
 =========
-This role is designed to configure a new environment to use Docker on Fedora. It includes installing Docker, Docker Compose, and provisions device mapper storage. See [Docker](https://docs.docker.com/engine/userguide/storagedriver/device-mapper-driver/) for more information about device mapper-based storage. 
+This role is designed to configure a new environment to use Docker on Fedora. It includes installing Docker, Docker Compose, and provisions device mapper storage. See [Docker](https://docs.docker.com/engine/userguide/storagedriver/device-mapper-driver/) for more information about device mapper-based storage.
 
 Requirements
 ------------
-NA
+A physical volume or volumes must be provided and should be specified in the `docker_pvs` variable, which is described below.
 
 Role Variables
 --------------
-* docker_vg: the volume group that will be created for device mapper storage (default: docker)
-* docker_pv: the physical volume from which the volume group above will be created 
-docker_compose_version: the version of Docker Compose to retrieve (default: 1.9.0)
-* docker_os: the version of the operating system (default: Linux)
-* docker_machine_architecture: (default: x84_64)
-* docker_docker_users: an array of users to add to the docker group in order to allow Docker use without sudo
+* docker_pvs: the physical volume from which the volume group above will be created (default: no default provided) *mandatory*
+* docker_compose_version: the version of Docker Compose to retrieve (default: 1.9.0) *mandatory*
+* docker_machine_architecture: (default: x84_64) *mandatory*
+* docker_docker_users: an array of users to add to the docker group in order to allow Docker use without sudo (default: no default provided) *optional*
 
 Dependencies
 ------------
@@ -23,7 +21,8 @@ Example Playbook
 ----------------
     - hosts: docker
       become: yes
-      become_method: sudo
+      vars:
+        docker_pvs: dev/vda
       roles:
         - docker
 
