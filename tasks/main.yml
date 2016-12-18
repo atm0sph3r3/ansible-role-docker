@@ -26,23 +26,30 @@
     state: present
     pvs: "{{ docker_pvs }}"
 
-- name: create docker thinpool logical volume
-  lvol:
-    lv: thinpool
-    size: 95%VG
-    state: present
-    vg: "{{ docker_vg }}"
-    opts: "--wipesignatures y"
+- name: get thinpool output
+  command: lvdisplay {{ docker_vg }}/thinpool
+  register: thinpool_result
+  ignore_errors: yes
 
-- name: create docker thinpool metadata logical volume
-  lvol:
-    lv: thinpoolmeta
-    vg: "{{ docker_vg }}"
-    size: 1%VG
-    opts: "--wipesignatures y"
+- block:
+  - name: create docker thinpool logical volume
+    lvol:
+      lv: thinpool
+      size: 95%VG
+      state: present
+      vg: "{{ docker_vg }}"
+      opts: "--wipesignatures y"
 
-- name: convert pool into thin pool
-  command: lvconvert -y --zero n -c 512K --thinpool docker/thinpool --poolmetadata docker/thinpoolmeta
+  - name: create docker thinpool metadata logical volume
+    lvol:
+      lv: thinpoolmeta
+      vg: "{{ docker_vg }}"
+      size: 1%VG
+      opts: "--wipesignatures y"
+
+  - name: convert pool into thin pool
+    command: lvconvert -y --zero n -c 512K --thinpool docker/thinpool --poolmetadata docker/thinpoolmeta
+  when: thinpool_result.stdout.find("thinpool_tmeta") == -1 
 
 - name: create lvm profile directory
   file:
